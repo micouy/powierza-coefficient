@@ -41,7 +41,7 @@ That means the algorithm must differentiate between cells that were filled in ho
 4. *Powierża distance* is the least value in the last row. In some cases there are no values in the last row and the distance is not defined.
 
 
-# Illustration
+## Illustration
 
 Cells with B's were filled in horizontal moves and those with G's were filled in diagonal moves. The numbers next to the letters are cells' scores. The distance is 2.
 
