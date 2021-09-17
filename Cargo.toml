@@ -1,0 +1,7 @@
+[package]
+name = "powierza-distance"
+authors = ["micouy <m.powierza@tutanota.com>"]
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
