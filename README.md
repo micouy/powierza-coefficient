@@ -38,3 +38,11 @@ That means the algorithm must differentiate between cells that were filled in ho
    * If there's only one available move, make it.
    * If there are two available moves and their scores are equal, make the diagonal move.
    * If there are two available moves and their scores aren't equal, make the move with the least score.
+4. *Powierża distance* is the least value in the last row. In some cases there are no values in the last row and the distance is not defined.
+
+
+# Illustration
+
+Cells with B's were filled in horizontal moves and those with G's were filled in diagonal moves. The numbers next to the letters are cells' scores. The distance is 2.
+
+![image](https://user-images.githubusercontent.com/20628866/133845024-0266c4ec-3ba1-415a-89b4-58b3fcf686fd.png)
