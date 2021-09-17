@@ -142,9 +142,7 @@ fn next_different(horizontal: Cell) -> Cell {
     }
 }
 
-fn main() {
-    let pattern = "abcjkl";
-    let sequence = "abc_jk_abcj_l";
+fn dist(pattern: &str, sequence: &str) -> Option<u32> {
     let n_rows = pattern.len();
     let n_cols = sequence.len();
 
@@ -152,7 +150,11 @@ fn main() {
 
     for (y, pattern_letter) in pattern.chars().enumerate() {
         for (x, sequence_letter) in sequence.chars().enumerate() {
-            let left = x.checked_sub(1).and_then(|x| edyta.get(x, y)).copied().flatten();
+            let left = x
+                .checked_sub(1)
+                .and_then(|x| edyta.get(x, y))
+                .copied()
+                .flatten();
             let upper_left = x
                 .checked_sub(1)
                 .and_then(|x| y.checked_sub(1).map(|y| (x, y)))
@@ -173,7 +175,8 @@ fn main() {
                             Some(next_matching(left, upper_left)),
                         (None, Some(upper_left)) =>
                             Some(Cell::Continuation(upper_left.score())),
-                        (Some(left), None) => Some(Cell::Break(left.score() + 1)),
+                        (Some(left), None) =>
+                            Some(Cell::Break(left.score() + 1)),
                         (None, None) => None,
                     }
                 } else {
@@ -183,13 +186,38 @@ fn main() {
                         None
                     }
                 }
-
             };
 
             edyta.set(cell, x, y);
         }
     }
 
-	println!("{} vs {}\n", pattern, sequence);
-    println!("{}", edyta);
+    edyta.inner.last().and_then(|last_row| {
+        last_row
+            .iter()
+            .filter_map(|cell| cell.as_ref())
+            .map(|cell| cell.score())
+            .min()
+    })
+
+    // println!("{} vs {}\n", pattern, sequence);
+    // println!("{}", edyta);
+}
+
+fn main() {}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn testyyy() {
+        let pattern = "abcjkl";
+
+        assert_eq!(dist(pattern, "abcjkl").unwrap(), 0);
+        assert_eq!(dist(pattern, "abc_jkl").unwrap(), 1);
+        assert_eq!(dist(pattern, "abc_jk_abcj_l").unwrap(), 2);
+        assert_eq!(dist(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(), 2);
+        assert_eq!(dist(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(), 1);
+    }
 }
