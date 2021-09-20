@@ -136,7 +136,7 @@ fn get_score(
     }
 }
 
-fn powierza_distance_optional_short_circuiting(
+fn powierża_distance_optional_short_circuiting(
     pattern: &str,
     sequence: &str,
     max_allowed_score: Option<u32>,
@@ -228,16 +228,16 @@ fn powierza_distance_optional_short_circuiting(
     get_distance(&matrix)
 }
 
-pub fn powierza_distance(pattern: &str, sequence: &str) -> Option<u32> {
-    powierza_distance_optional_short_circuiting(pattern, sequence, None)
+pub fn powierża_distance(pattern: &str, sequence: &str) -> Option<u32> {
+    powierża_distance_optional_short_circuiting(pattern, sequence, None)
 }
 
-pub fn powierza_distance_short_circuiting(
+pub fn powierża_distance_short_circuiting(
     pattern: &str,
     sequence: &str,
     max_allowed_score: u32,
 ) -> Option<u32> {
-    powierza_distance_optional_short_circuiting(
+    powierża_distance_optional_short_circuiting(
         pattern,
         sequence,
         Some(max_allowed_score),
@@ -246,17 +246,17 @@ pub fn powierza_distance_short_circuiting(
 
 #[cfg(test)]
 mod test {
-    use super::powierza_distance as powierza;
+    use super::powierża_distance as powierża;
 
     #[test]
     fn testyyy() {
         let pattern = "abcjkl";
 
-        assert_eq!(powierza(pattern, "abcjkl").unwrap(), 0);
-        assert_eq!(powierza(pattern, "abc_jkl").unwrap(), 1);
-        assert_eq!(powierza(pattern, "a_bcjkl").unwrap(), 1);
-        assert_eq!(powierza(pattern, "abc_jk_abcj_l").unwrap(), 2);
-        assert_eq!(powierza(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(), 2);
-        assert_eq!(powierza(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(), 1);
+        assert_eq!(powierża(pattern, "abcjkl").unwrap(), 0);
+        assert_eq!(powierża(pattern, "abc_jkl").unwrap(), 1);
+        assert_eq!(powierża(pattern, "a_bcjkl").unwrap(), 1);
+        assert_eq!(powierża(pattern, "abc_jk_abcj_l").unwrap(), 2);
+        assert_eq!(powierża(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(), 2);
+        assert_eq!(powierża(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(), 1);
     }
 }
