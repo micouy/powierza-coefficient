@@ -1,100 +1,37 @@
-use std::{
-    fmt::{self, Write},
-    mem,
-};
-
-struct DumbMatrix<T> {
-    inner: Vec<Vec<T>>,
-    size: (usize, usize),
+#[derive(Debug)]
+struct ScoreMatrix {
+    inner: Vec<Option<u32>>,
+    width: usize,
+    height: usize,
 }
 
-impl<T> DumbMatrix<T> {
-    fn new(width: usize, height: usize) -> Self
-    where
-        T: Default,
-    {
-        let inner = (0..height)
-            .map(|_| (0..width).map(|_| T::default()).collect())
-            .collect();
+impl ScoreMatrix {
+    fn new(width: usize, height: usize) -> Self {
+        let inner = (0..(width * height)).map(|_| None).collect();
 
         Self {
             inner,
-            size: (width, height),
+            width,
+            height,
         }
     }
 
-    fn optional(width: usize, height: usize) -> DumbMatrix<Option<T>> {
-        DumbMatrix::new(width, height)
-    }
-
-    fn fill(value: T, width: usize, height: usize) -> Self
-    where
-        T: Clone,
-    {
-        let inner = (0..height)
-            .map(|_| (0..width).map(|_| value.clone()).collect())
-            .collect();
-
-        Self {
-            inner,
-            size: (width, height),
+    #[inline(always)]
+    fn set(&mut self, score: u32, x: usize, y: usize) {
+        if let Some(prev_score) = self.inner.get_mut(y * self.width + x) {
+            *prev_score = Some(score);
         }
     }
 
-    fn size(&self) -> (usize, usize) {
-        self.size
-    }
-
-    fn set(&mut self, value: T, x: usize, y: usize) -> Option<T> {
+    #[inline(always)]
+    fn get(&self, x: usize, y: usize) -> Option<&u32> {
         self.inner
-            .get_mut(y)
-            .and_then(|row| row.get_mut(x))
-            .and_then(|cell| Some(mem::replace(cell, value)))
-    }
-
-    fn get(&self, x: usize, y: usize) -> Option<&T> {
-        self.inner.get(y).and_then(|row| row.get(x))
-    }
-
-    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
-        self.inner.get_mut(y).and_then(|row| row.get_mut(x))
+            .get(y * self.width + x)
+            .and_then(|inner| inner.as_ref())
     }
 }
 
-impl<T> fmt::Display for DumbMatrix<T>
-where
-    T: fmt::Debug,
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let (width, height) = self.size();
-        let mut string_matrix = DumbMatrix::<String>::new(width, height);
-        let mut max_width = 0;
-
-        for (y, row) in self.inner.iter().enumerate() {
-            for (x, value) in row.iter().enumerate() {
-                if let Some(cell) = string_matrix.get_mut(x, y) {
-                    write!(cell, "{:?}", value)?;
-                    max_width = max_width.max(cell.chars().count());
-                }
-            }
-        }
-
-        for row in string_matrix.inner.iter() {
-            for (x, value) in row.iter().enumerate() {
-                if x != 0 {
-                    write!(f, "\t")?;
-                }
-
-                write!(f, "{:>width$}", value, width = max_width)?;
-            }
-
-            write!(f, "\n")?;
-        }
-
-        Ok(())
-    }
-}
-
+#[inline(always)]
 fn get_score(
     left: Option<u32>,
     upper_left: Option<u32>,
@@ -136,6 +73,27 @@ fn get_score(
     }
 }
 
+#[inline(always)]
+fn get_left(matrix: &ScoreMatrix, x: usize, y: usize) -> Option<u32> {
+    x.checked_sub(1).and_then(|x| matrix.get(x, y)).copied()
+}
+
+#[inline(always)]
+fn get_upper_left(matrix: &ScoreMatrix, x: usize, y: usize) -> Option<u32> {
+    x.checked_sub(1)
+        .and_then(|x| y.checked_sub(1).map(|y| (x, y)))
+        .and_then(|(x, y)| matrix.get(x, y))
+        .copied()
+}
+
+#[inline(always)]
+fn get_distance(matrix: &ScoreMatrix) -> Option<u32> {
+    let start = matrix.inner.len() - matrix.width;
+    let end = matrix.inner.len();
+
+    matrix.inner[start..end].iter().flatten().min().copied()
+}
+
 fn powierża_distance_optional_short_circuiting(
     pattern: &str,
     sequence: &str,
@@ -144,37 +102,7 @@ fn powierża_distance_optional_short_circuiting(
     let n_rows = pattern.len();
     let n_cols = sequence.len();
 
-    let mut matrix = DumbMatrix::<u32>::optional(n_cols, n_rows);
-
-    fn get_left(
-        matrix: &DumbMatrix<Option<u32>>,
-        x: usize,
-        y: usize,
-    ) -> Option<u32> {
-        x.checked_sub(1)
-            .and_then(|x| matrix.get(x, y))
-            .copied()
-            .flatten()
-    }
-
-    fn get_upper_left(
-        matrix: &DumbMatrix<Option<u32>>,
-        x: usize,
-        y: usize,
-    ) -> Option<u32> {
-        x.checked_sub(1)
-            .and_then(|x| y.checked_sub(1).map(|y| (x, y)))
-            .and_then(|(x, y)| matrix.get(x, y))
-            .copied()
-            .flatten()
-    }
-
-    fn get_distance(matrix: &DumbMatrix<Option<u32>>) -> Option<u32> {
-        matrix
-            .inner
-            .last()
-            .and_then(|last_row| last_row.iter().flatten().min().copied())
-    }
+    let mut matrix = ScoreMatrix::new(n_cols, n_rows);
 
     for (y, pattern_letter) in pattern.chars().enumerate() {
         let mut min_row_score = None;
@@ -198,21 +126,17 @@ fn powierża_distance_optional_short_circuiting(
                 get_score(left, upper_left, does_match, is_left_continuation)
             };
 
-            let score = match result {
-                Some((score, _)) => {
-                    min_row_score = min_row_score
-                        .map(|min_row_score: u32| min_row_score.min(score))
-                        .or_else(|| Some(score));
+            if let Some((score, _)) = result {
+                min_row_score = min_row_score
+                    .map(|min_row_score: u32| min_row_score.min(score))
+                    .or(Some(score));
 
-                    Some(score)
-                }
-                None => None,
-            };
+                matrix.set(score, x, y);
+            }
+
             is_left_continuation = result
                 .map(|(_, is_continuation)| is_continuation)
                 .unwrap_or(false);
-
-            matrix.set(score, x, y);
         }
 
         match (min_row_score, max_allowed_score) {
