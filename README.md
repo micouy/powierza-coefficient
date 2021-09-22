@@ -1,13 +1,13 @@
 # *Powierża distance*
 
-Given a sequence `S` and its subsequence `P`, *Powierża distance* is the least number of disjoint subsequences of consecutive elements in a sequence `S` — `s_i` — that, when concatenated in their original order, are equal to `P`, less 1. Alternatively, it is the number of gaps between subsequences `s_i`.
+Given a sequence `S` and its subsequence `P`, *Powierża distance* is the least number of disjoint subsequences of consecutive elements in `S` — `s_i` — that, when concatenated in their original order, are equal to `P`, less 1. Alternatively, it is the number of gaps between subsequences `s_i`.
 
 
 ## Examples
 
-Let `P` be `abcjkl` and `S` be `abcjkl`. The *Powierża distance* between them is 0, since only one subsequence is needed to 'cover' entire `P` — `S`.
+Let `P` be `abcjkl` and `S` be `abcjkl`. The *Powierża distance* between them is 0, since only one subsequence of `S` is needed to 'cover' entire `P` — `S`.
 
-Let `P` be `abcjkl` and `S` be `abc_jkl` (`_` functions as a normal element in this sequence). The *Powierża distance* between them is 1. That's because there are two subsequences of consecutive elements of `S`, `s_1`: `abc` and `s_2`: `jkl`, so there's one gap.
+Let `P` be `abcjkl` and `S` be `abc_jkl` (`_` is an element of `S`). The *Powierża distance* between them is 1. That's because there are two subsequences of consecutive elements of `S`, `s_1`: `abc` and `s_2`: `jkl`, so there's one gap.
 
 Let `P` be `abcjkl` and `S` be `__abc_jk_abcj_l__`. The *Powierża distance* between them is 2. The subsequences are `abc`, `jk` and `l`.
 
