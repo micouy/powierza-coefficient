@@ -20,7 +20,7 @@ The algorithm was inspired by [Wagner–Fischer algorithm
 That means the algorithm must differentiate between cells that were filled in horizontal moves and the ones that were filled in diagonal moves. The first type of cells are cells containing `Gap(score)`; the second type — `Continuation(score)`. A horizontal move results in `Gap(score)` if the original cell contains `Gap(score)` and in `Gap(score + 1)` if the original cell contains `Continuation(score)`. The algorithm prefers moves that result in lower score and a diagonal move over horizontal move if they result in the same score.
 
 1. Create a matrix `m` rows by `n` cols where `m` is the length of `S` and `n` is the length of `P`. `n` must be less or equal to `m`. Each cell can either be empty (that's the initial state) or contain either `Gap(score)` or `Continuation(score)`.
-2. Begin filling the matrix from left to right and from top to bottom. The first row is special — `xth`, `yth` cell is set to `Continuation(0)` if the `xth` element of `S` and the `yth` element of `P` are equal, otherwise it is left empty.
+2. Begin filling the matrix from left to right and from top to bottom. The first row is special — `xth`, `yth` cell is set to `Continuation(0)` if the `xth` element of `S` and the `yth` element of `P` are equal. Otherwise, is set to `Gap(score + cost)` where `score` is the score of its left neighbor. If its left neighbor is empty, the cell is left empty as well.
 3. Other cells are filled according to these rules:
 
    Let `x` be `a`'s upper-left neighbor and `y` be its left neighbor:
@@ -45,4 +45,5 @@ That means the algorithm must differentiate between cells that were filled in ho
 
 Cells with B's were filled in horizontal moves and those with G's were filled in diagonal moves. The numbers next to the letters are cells' scores. The distance is 2.
 
-![image](https://user-images.githubusercontent.com/20628866/133845024-0266c4ec-3ba1-415a-89b4-58b3fcf686fd.png)
+![image](https://user-images.githubusercontent.com/20628866/134387055-24dfec18-159e-42cc-8d1b-c4ef15ce7046.png)
+
