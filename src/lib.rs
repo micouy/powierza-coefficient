@@ -1,5 +1,3 @@
-use std::mem;
-
 #[inline(always)]
 fn is_nonempty(score: u32) -> bool {
     score > 0
@@ -14,28 +12,30 @@ pub fn powierża_distance(pattern: &str, sequence: &str) -> Option<u32> {
         return None;
     }
 
-    let mut vec_1 = vec![0; sequence_len];
-    let mut vec_2 = vec![0; sequence_len];
-
-    let mut previous_row: &mut Vec<u32> = &mut vec_1;
-    let mut current_row: &mut Vec<u32> = &mut vec_2;
+    let mut cache = vec![0; sequence_len];
+    let mut left_score = 0;
 
     let mut is_left_continuation = false;
     let mut does_row_contain_match = false;
+    let mut first_match_ix = 0;
 
     // First row.
     let pattern_first_c = pattern.chars().next().expect("unreachable");
 
     for (x, sequence_c) in sequence.chars().enumerate() {
         if pattern_first_c == sequence_c {
-            previous_row[x] = 1;
+            cache[x] = 1;
+            if !does_row_contain_match {
+                first_match_ix = x;
+            }
+
             is_left_continuation = true;
             does_row_contain_match = true;
         } else {
-            let left_score = if x == 0 { 0 } else { previous_row[x - 1] };
+            let left_score = if x == 0 { 0 } else { cache[x - 1] };
 
             if is_nonempty(left_score) {
-                previous_row[x] = if is_left_continuation {
+                cache[x] = if is_left_continuation {
                     left_score + 1
                 } else {
                     left_score
@@ -47,49 +47,67 @@ pub fn powierża_distance(pattern: &str, sequence: &str) -> Option<u32> {
     if !does_row_contain_match {
         return None;
     }
-    does_row_contain_match = false;
 
     // The rest.
-    for (y, pattern_c) in pattern.chars().enumerate().skip(1) {
-        for (x, sequence_c) in sequence.chars().enumerate().skip(y) {
+    for pattern_c in pattern.chars().skip(1) {
+        does_row_contain_match = false;
+        cache[sequence_len - 1] = left_score;
+        left_score = 0;
+
+        for (x, sequence_c) in
+            sequence.chars().enumerate().skip(first_match_ix + 1)
+        {
             // x is guaranteed to be at least 1.
-            let left_score = current_row[x - 1];
             let left_next_score = if is_left_continuation {
                 left_score + 1
             } else {
                 left_score
             };
 
-            if pattern_c == sequence_c {
+            let current_score = if pattern_c == sequence_c {
+                if !does_row_contain_match {
+                    first_match_ix = x;
+                }
                 does_row_contain_match = true;
-                let upper_left_score = previous_row[x - 1];
+
+                let upper_left_score = cache[x - 1];
                 let upper_left_next_score = upper_left_score;
 
                 if is_nonempty(left_score)
                     && left_next_score <= upper_left_next_score
                 {
-                    current_row[x] = left_next_score;
                     is_left_continuation = false;
+
+                    left_next_score
                 } else if is_nonempty(upper_left_score) {
-                    current_row[x] = upper_left_next_score;
                     is_left_continuation = true;
-                } // ...else leave the cell empty.
+
+                    upper_left_next_score
+                } else {
+                    0
+                }
             } else if is_nonempty(left_score) {
-                current_row[x] = left_next_score;
                 is_left_continuation = false;
-            } // ...else leave the cell empty.
+
+                left_next_score
+            } else {
+                0
+            };
+
+            cache[x - 1] = left_score;
+            left_score = current_score;
         }
 
         if !does_row_contain_match {
             return None;
         }
-        does_row_contain_match = false;
-        mem::swap(&mut current_row, &mut previous_row);
-        current_row.fill(0);
     }
 
-    previous_row
+    cache[sequence_len - 1] = left_score;
+
+    cache
         .iter()
+        .skip(first_match_ix)
         .filter(|score| **score > 0)
         .min()
         .map(|score| score - 1)
@@ -100,8 +118,11 @@ mod test {
     use super::powierża_distance as powierża;
 
     #[test]
-    fn testyyy() {
+    fn test_powierża_distance() {
         let pattern = "abcjkl";
+
+        assert!(powierża(pattern, "").is_none());
+        assert!(powierża(pattern, "xyz").is_none());
 
         assert_eq!(powierża(pattern, "abcjkl").unwrap(), 0);
         assert_eq!(powierża(pattern, "abc_jkl").unwrap(), 1);
