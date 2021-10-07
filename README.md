@@ -11,6 +11,8 @@ Let `P` be `abcjkl` and `S` be `abc_jkl` (`_` is an element of `S`). The *Powier
 
 Let `P` be `abcjkl` and `S` be `__abc_jk_abcj_l__`. The *Powierża distance* between them is 2. The subsequences are `abc`, `jk` and `l`.
 
+For more examples, see [tests](https://github.com/micouy/powierza-distance/blob/b6eda776d3098126ba3c9f1f38641f6a330e1481/src/lib.rs#L121-L133).
+
 
 # *Powierża algorithm*
 
