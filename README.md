@@ -25,7 +25,7 @@ Used terms:
 | `abc`      | `xyz`                  | —              | not defined            |
 
 
-For more examples, see [tests](https://github.com/micouy/powierza-coefficient/blob/c69daec7820b9e46d73d39f6f4ba1afc96f609ac/src/lib.rs#L122-L132).
+For more examples, see [tests](https://github.com/micouy/powierza-coefficient/blob/3a2d4824332c83e3223e61f1f1410cc887e8e486/src/lib.rs#L118-L128).
 
 
 # *Powierża algorithm*
