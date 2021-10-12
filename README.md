@@ -16,16 +16,27 @@ Used terms:
 * A partition of a sequence is a sequence of pairwise disjoint subsequences that, when concatenated, are equal to the entire original sequence.
 
 
+## Intuitive explanation
+
+Take all characters from the pattern and, while perserving the original order, align them with the same characters in the text so that there are as few groups of characters as possible. The coefficient is the number of gaps between these groups.
+
+
 ## Examples
 
 | `P`        | `T`                    | `p`            | *Powierża coefficient* |
 |------------|------------------------|----------------|------------------------|
 | `powcoeff` | `powierża coefficient` | `pow`, `coeff` | 1                      |
+| `abc`      | `a_b_c`                | `a`, `b`, `c`  | 2                      |
 | `abc`      | `abc`                  | `abc`          | 0                      |
 | `abc`      | `xyz`                  | —              | not defined            |
 
 
 For more examples, see [tests](https://github.com/micouy/powierza-coefficient/blob/3a2d4824332c83e3223e61f1f1410cc887e8e486/src/lib.rs#L118-L128).
+
+
+## Use case
+
+The *Powierża coefficient* is used in [`kn`](https://github.com/micouy/kn) to determine which of the directories' names better match the abbreviation. Many other string coefficients and metrics were found unsuitable, including *Levenshtein distance*. *Levenshtein distance* is biased in favour of short strings. For example, the *Levenshtein distance* from `gra` to `programming` is greater than to `gorgia`, even though it does not "resemble" the abbreviation. *Powierża coefficient* for these pairs of strings is 0 and 2, so `programming` would be chosen (correctly).
 
 
 # *Powierża algorithm*
