@@ -54,9 +54,7 @@ pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
         cache[sequence_len - 1] = left_score;
         left_score = 0;
 
-        for (x, sequence_c) in
-            sequence.chars().enumerate().skip(first_match_ix + 1)
-        {
+        for (x, sequence_c) in sequence.chars().enumerate().skip(first_match_ix + 1) {
             // x is guaranteed to be at least 1.
             let left_next_score = if is_left_continuation {
                 left_score + 1
@@ -73,9 +71,7 @@ pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
                 let upper_left_score = cache[x - 1];
                 let upper_left_next_score = upper_left_score;
 
-                if is_nonempty(left_score)
-                    && left_next_score <= upper_left_next_score
-                {
+                if is_nonempty(left_score) && left_next_score <= upper_left_next_score {
                     is_left_continuation = false;
 
                     left_next_score
@@ -115,26 +111,20 @@ pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
 
 #[cfg(test)]
 mod test {
-    use super::powierża_coefficient;
+    use super::powierża_coefficient as powierża;
 
     #[test]
     fn test_powierża_coefficient() {
         let pattern = "abcjkl";
 
-        assert!(powierża_coefficient(pattern, "").is_none());
-        assert!(powierża_coefficient(pattern, "xyz").is_none());
+        assert!(powierża(pattern, "").is_none());
+        assert!(powierża(pattern, "xyz").is_none());
 
-        assert_eq!(powierża_coefficient(pattern, "abcjkl").unwrap(), 0);
-        assert_eq!(powierża_coefficient(pattern, "abc_jkl").unwrap(), 1);
-        assert_eq!(powierża_coefficient(pattern, "a_bcjkl").unwrap(), 1);
-        assert_eq!(powierża_coefficient(pattern, "abc_jk_abcj_l").unwrap(), 2);
-        assert_eq!(
-            powierża_coefficient(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(),
-            2
-        );
-        assert_eq!(
-            powierża_coefficient(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(),
-            1
-        );
+        assert_eq!(powierża(pattern, "abcjkl").unwrap(), 0);
+        assert_eq!(powierża(pattern, "abc_jkl").unwrap(), 1);
+        assert_eq!(powierża(pattern, "a_bcjkl").unwrap(), 1);
+        assert_eq!(powierża(pattern, "abc_jk_abcj_l").unwrap(), 2);
+        assert_eq!(powierża(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(), 2);
+        assert_eq!(powierża(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(), 1);
     }
 }
