@@ -1,17 +1,14 @@
 [package]
-name = "powierza-distance"
+name = "powierza-coefficient"
 authors = ["micouy <m.powierza@tutanota.com>"]
 version = "0.1.0"
 edition = "2018"
-
 
 [[bench]]
 name = "benches"
 harness = false
 
-
 [dependencies]
-
 
 [dev-dependencies]
 criterion = "0.3"

@@ -3,7 +3,7 @@ fn is_nonempty(score: u32) -> bool {
     score > 0
 }
 
-pub fn powierża_distance(pattern: &str, sequence: &str) -> Option<u32> {
+pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
     let sequence_len = sequence.chars().count();
     let pattern_len = pattern.chars().count();
 
@@ -115,20 +115,26 @@ pub fn powierża_distance(pattern: &str, sequence: &str) -> Option<u32> {
 
 #[cfg(test)]
 mod test {
-    use super::powierża_distance as powierża;
+    use super::powierża_coefficient;
 
     #[test]
-    fn test_powierża_distance() {
+    fn test_powierża_coefficient() {
         let pattern = "abcjkl";
 
-        assert!(powierża(pattern, "").is_none());
-        assert!(powierża(pattern, "xyz").is_none());
+        assert!(powierża_coefficient(pattern, "").is_none());
+        assert!(powierża_coefficient(pattern, "xyz").is_none());
 
-        assert_eq!(powierża(pattern, "abcjkl").unwrap(), 0);
-        assert_eq!(powierża(pattern, "abc_jkl").unwrap(), 1);
-        assert_eq!(powierża(pattern, "a_bcjkl").unwrap(), 1);
-        assert_eq!(powierża(pattern, "abc_jk_abcj_l").unwrap(), 2);
-        assert_eq!(powierża(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(), 2);
-        assert_eq!(powierża(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(), 1);
+        assert_eq!(powierża_coefficient(pattern, "abcjkl").unwrap(), 0);
+        assert_eq!(powierża_coefficient(pattern, "abc_jkl").unwrap(), 1);
+        assert_eq!(powierża_coefficient(pattern, "a_bcjkl").unwrap(), 1);
+        assert_eq!(powierża_coefficient(pattern, "abc_jk_abcj_l").unwrap(), 2);
+        assert_eq!(
+            powierża_coefficient(pattern, "a_b_c_jkl_ab_c_jkl").unwrap(),
+            2
+        );
+        assert_eq!(
+            powierża_coefficient(pattern, "a_b_c_abc_j_k_l_jkl").unwrap(),
+            1
+        );
     }
 }
