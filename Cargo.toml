@@ -3,6 +3,17 @@ name = "powierza-coefficient"
 authors = ["micouy <m.powierza@tutanota.com>"]
 version = "1.0.0"
 edition = "2018"
+include = [
+	"README.md",
+	"Cargo.toml",
+	"**/**.rs",
+]
+description = "Powierża coefficient is a statistic for gauging if one string is an abbreviation of the other"
+repository = "https://github.com/micouy/powierza-coefficient"
+readme = "README.md"
+license = "MIT"
+categories = ["algorithms"]
+keywords = ["string", "abbreviation", "statistic"]
 
 [[bench]]
 name = "benches"
