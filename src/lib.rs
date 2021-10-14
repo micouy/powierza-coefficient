@@ -1,8 +1,6 @@
-#[inline(always)]
-fn is_nonempty(score: u32) -> bool {
-    score > 0
-}
+#![doc = include_str!("../README.md")]
 
+/// Computes Powierża coefficient of a pattern and a piece of text. For a detailed explanation, see [lib's docs](crate).
 pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
     let sequence_len = sequence.chars().count();
     let pattern_len = pattern.chars().count();
@@ -25,6 +23,7 @@ pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
     for (x, sequence_c) in sequence.chars().enumerate() {
         if pattern_first_c == sequence_c {
             cache[x] = 1;
+
             if !does_row_contain_match {
                 first_match_ix = x;
             }
@@ -107,6 +106,11 @@ pub fn powierża_coefficient(pattern: &str, sequence: &str) -> Option<u32> {
         .filter(|score| **score > 0)
         .min()
         .map(|score| score - 1)
+}
+
+#[inline(always)]
+fn is_nonempty(score: u32) -> bool {
+    score > 0
 }
 
 #[cfg(test)]

@@ -52,7 +52,7 @@ That means the algorithm must differentiate between cells that were filled in ho
 
    Let `x` be `a`'s upper-left neighbor and `y` be its left neighbor:
 
-   ```
+   ```text
    x _
    y a
    ```
