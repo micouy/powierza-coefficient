@@ -8,7 +8,7 @@ include = [
 	"Cargo.toml",
 	"**/**.rs",
 ]
-description = "Powierża coefficient is a statistic for gauging if one string is an abbreviation of the other"
+description = "Powierża coefficient is a statistic for gauging if one string is an abbreviation of another"
 repository = "https://github.com/micouy/powierza-coefficient"
 readme = "README.md"
 license = "MIT"
