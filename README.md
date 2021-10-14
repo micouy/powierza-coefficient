@@ -31,7 +31,7 @@ Take all characters from the pattern and, while perserving the original order, a
 | `abc`      | `xyz`                  | —              | not defined            |
 
 
-For more examples, see [tests](https://github.com/micouy/powierza-coefficient/blob/3a2d4824332c83e3223e61f1f1410cc887e8e486/src/lib.rs#L118-L128).
+For more examples, see [tests](https://github.com/micouy/powierza-coefficient/blob/c9d77db4df0b00bdb4983f080e0a0e7bc47a0de0/src/lib.rs#L121-L133).
 
 
 ## Use case
