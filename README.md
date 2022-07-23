@@ -36,7 +36,7 @@ For more examples, see [tests](https://github.com/micouy/powierza-coefficient/bl
 
 ## Use case
 
-The *Powierża coefficient* is used in [`kn`](https://github.com/micouy/kn) to determine which of the directories' names better match the abbreviation. Many other string coefficients and metrics were found unsuitable, including *Levenshtein distance*. *Levenshtein distance* is biased in favour of short strings. For example, the *Levenshtein distance* from `gra` to `programming` is greater than to `gorgia`, even though it does not "resemble" the abbreviation. *Powierża coefficient* for these pairs of strings is 0 and 2, so `programming` would be chosen (correctly).
+The *Powierża coefficient* is used in [`kn`](https://github.com/micouy/kn) and in [`nushell`](https://github.com/nushell/nushell) to determine which of the directories' names better match the abbreviation. Many other string coefficients and metrics were found unsuitable, including *Levenshtein distance*. *Levenshtein distance* is biased in favour of short strings. For example, the *Levenshtein distance* from `gra` to `programming` is greater than to `gorgia`, even though it does not "resemble" the abbreviation. *Powierża coefficient* for these pairs of strings is 0 and 2, so `programming` would be chosen (correctly).
 
 
 # *Powierża algorithm*
