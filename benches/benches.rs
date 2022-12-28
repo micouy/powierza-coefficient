@@ -9,9 +9,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| {
             levenshtein(
                 black_box("abc_jkl_mno_xyz"),
-                black_box(
-                    "xyz_mno_jkl_abc_mno_jkl_xyz_abc_mon_jkl_mno_xyz_xyz",
-                ),
+                black_box("xyz_mno_jkl_abc_mno_jkl_xyz_abc_mon_jkl_mno_xyz_xyz"),
             )
         })
     });
@@ -20,9 +18,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| {
             powierża_coefficient(
                 black_box("abc_jkl_mno_xyz"),
-                black_box(
-                    "xyz_mno_jkl_abc_mno_jkl_xyz_abc_mon_jkl_mno_xyz_xyz",
-                ),
+                black_box("xyz_mno_jkl_abc_mno_jkl_xyz_abc_mon_jkl_mno_xyz_xyz"),
             )
         })
     });

@@ -9,130 +9,155 @@ pub fn powierża_coefficient(pattern: &str, text: &str) -> Option<u32> {
     // The coefficient is undefined if either of the three is true:
     // 1. The pattern is longer than the text.
     // 2. The pattern length is 0.
-    // 3. The text length is 0. (This check is unnecessary but makes the
-    //    code more understandable.)
+    // 3. The text length is 0.
+    //
+    // The third check is redundant but makes code more understandable.
     if pattern_len > text_len || pattern_len == 0 || text_len == 0 {
         return None;
     }
 
-    // Pad the matrix with 0s on the top.
-    let mut cache = vec![Some(0); text_len];
+    // The matrix is padded with 0s on the top.
+    let mut previous_row = vec![Some(0); text_len];
+    let mut n_chars_to_skip = 0;
 
-    let mut left = None;
-    let mut is_left_continuation = false;
-    let mut first_match_in_row_ix = None;
+    for (y, pattern_char) in pattern.chars().enumerate() {
+        let n_chars_to_omit = pattern_len - y - 1;
 
-    for pattern_char in pattern.chars() {
-        left = None;
+        let (current_row, first_match_ix) = match_pattern_char(
+            pattern_char,
+            text,
+            &previous_row,
+            n_chars_to_skip,
+            n_chars_to_omit,
+        )?;
 
-        // Pad the matrix with 0s on the left.
-        let mut diagonal = Some(0);
+        previous_row.clear();
+        previous_row.extend_from_slice(&current_row);
 
-        let text_chars = text.chars().enumerate().skip(first_match_in_row_ix.unwrap_or(0));
-
-        for (x, text_char) in text_chars {
-            let is_match = pattern_char == text_char;
-
-            let (current_score, is_continuation) =
-                calc_score(is_match, diagonal, left, is_left_continuation);
-
-            if is_continuation {
-                first_match_in_row_ix = first_match_in_row_ix.or(Some(x))
-            }
-
-            if x > 0 {
-                cache[x - 1] = left;
-            }
-
-            left = current_score;
-            is_left_continuation = is_continuation;
-            diagonal = cache[x];
-        }
-
-        // Terminate if no match was found in the current row.
-        if first_match_in_row_ix.is_none() {
-            return None;
-        }
+        n_chars_to_skip = first_match_ix;
     }
 
-    // Fill the score of the right-most cell in the last row.
-    cache[text_len - 1] = left;
-
     // The lowest score in the last row is the coefficient.
-    cache
+    previous_row
         .into_iter()
-        .skip(first_match_ix.unwrap_or(0))
+        .skip(n_chars_to_skip)
         .filter_map(|cell| cell)
         .min()
 }
 
-fn calc_mismatch_score(
-    left: Option<u32>,
-    is_left_continuation: bool,
-) -> Option<u32> {
-    left.map(|left_score| {
-        if is_left_continuation {
-            left_score + 1
-        } else {
-            left_score
-        }
-    })
-}
+type Row = Vec<Option<u32>>;
 
-fn calc_match_score(
-    diagonal: Option<u32>,
-    left: Option<u32>,
-    is_left_continuation: bool,
-) -> (Option<u32>, bool) {
-    let gap_score = calc_mismatch_score(left, is_left_continuation);
-    let continuation_score = diagonal;
+fn match_pattern_char(
+    pattern_char: char,
+    text: &str,
+    previous_row: &Row,
+    n_chars_to_skip: usize,
+    n_chars_to_omit: usize,
+) -> Option<(Row, usize)> {
+    let text_len = text.chars().count();
+    let text_chars = text
+        .chars()
+        .enumerate()
+        .take(text_len - n_chars_to_omit)
+        .skip(n_chars_to_skip);
+    let mut current_row = vec![None; text_len];
 
-    let (current_score, is_continuation) = match (gap_score, continuation_score)
-    {
-        (None, Some(continuation_score)) => {
-            // If only diagonal contains score, return Continuation.
-            (Some(continuation_score), true)
-        }
-        (Some(gap_score), None) => {
-            // If only left contains score, return Gap.
-            //
-            // This branch is probably unreachable.
-            (Some(gap_score), false)
-        }
-        (Some(gap_score), Some(continuation_score)) => {
-            // Choose gap if it has a lower or equal score to continuation.
-            if gap_score <= continuation_score {
-                (Some(gap_score), false)
-            } else {
-                (Some(continuation_score), true)
+    // Index of the first match in the current row.
+    let mut first_match_ix = None;
+    let mut left_score_and_is_gap = None;
+
+    for (x, text_char) in text_chars {
+        let is_match = pattern_char == text_char;
+        let diagonal_score = get_diagonal_score(&previous_row, x);
+
+        let current_score_and_is_gap = calc_score(is_match, diagonal_score, left_score_and_is_gap);
+
+        left_score_and_is_gap = current_score_and_is_gap;
+
+        match current_score_and_is_gap {
+            Some((score, is_gap)) => {
+                if !is_gap {
+                    first_match_ix = first_match_ix.or(Some(x));
+                }
+
+                current_row[x] = Some(score);
+            }
+            None => {
+                current_row[x] = None;
             }
         }
-        (None, None) => {
-            // If neither left nor diagonal contains a score, leave the cell
-            // empty.
-            (None, false)
-        }
-    };
+    }
 
-    (current_score, is_continuation)
+    match first_match_ix {
+        None => return None,
+        Some(first_match_ix) => return Some((current_row, first_match_ix)),
+    }
+}
+
+#[inline]
+fn get_diagonal_score(previous_row: &Row, x: usize) -> Option<u32> {
+    if x > 0 {
+        previous_row[x - 1]
+    } else {
+        Some(0)
+    }
 }
 
 fn calc_score(
     is_match: bool,
-    diagonal: Option<u32>,
-    left: Option<u32>,
-    is_left_continuation: bool,
-) -> (Option<u32>, bool) {
+    diagonal_score: Option<u32>,
+    left_score_and_is_gap: Option<(u32, bool)>,
+) -> Option<(u32, bool)> {
     if is_match {
-        calc_match_score(diagonal, left, is_left_continuation)
+        calc_match_score(diagonal_score, left_score_and_is_gap)
     } else {
-        let current_score = calc_mismatch_score(left, is_left_continuation);
-        let is_continuation = false;
+        let score = calc_mismatch_score(left_score_and_is_gap)?;
 
-        (current_score, is_continuation)
+        Some((score, true))
     }
 }
 
+fn calc_match_score(
+    diagonal_score: Option<u32>,
+    left_score_and_is_gap: Option<(u32, bool)>,
+) -> Option<(u32, bool)> {
+    let continuation_score = calc_continuation_score(diagonal_score);
+    let gap_score = calc_gap_score(left_score_and_is_gap);
+
+    match (continuation_score, gap_score) {
+        (None, None) => None,
+        (Some(continuation_score), None) => Some((continuation_score, false)),
+        (None, Some(_gap_score)) => unreachable!(),
+        (Some(continuation_score), Some(gap_score)) => {
+            if continuation_score <= gap_score {
+                Some((continuation_score, false))
+            } else {
+                Some((gap_score, true))
+            }
+        }
+    }
+}
+
+#[inline]
+fn calc_mismatch_score(left_score_and_is_gap: Option<(u32, bool)>) -> Option<u32> {
+    calc_gap_score(left_score_and_is_gap)
+}
+
+#[inline]
+fn calc_continuation_score(diagonal_score: Option<u32>) -> Option<u32> {
+    diagonal_score
+}
+
+#[inline]
+fn calc_gap_score(left_score_and_is_gap: Option<(u32, bool)>) -> Option<u32> {
+    let (left_score, is_left_gap) = left_score_and_is_gap?;
+
+    if is_left_gap {
+        Some(left_score)
+    } else {
+        Some(left_score + 1)
+    }
+}
 
 #[cfg(test)]
 mod test {
@@ -152,8 +177,9 @@ mod test {
     fn test_coefficient_should_be_undefined_if_text_is_longer_than_tet() {
         assert!(powierża(
             "pattern is not empty______________________________________",
-            "text is not empty but it is shorter than the pattern"
-        ).is_none());
+            " text is not empty but its shorter than pattern"
+        )
+        .is_none());
     }
 
     #[test]
@@ -205,7 +231,7 @@ mod test {
     }
 
     #[test]
-    fn test_coefficient_value_should_not_change_when_prefix_is_added() {
+    fn test_coefficient_value_should_not_change_when_suffix_is_added() {
         let pattern = "xddd";
 
         assert_eq!(powierża(pattern, "xddd_").unwrap(), 0);
@@ -215,7 +241,7 @@ mod test {
     }
 
     #[test]
-    fn test_coefficient_value_should_not_change_when_suffix_is_added() {
+    fn test_coefficient_value_should_not_change_when_prefix_is_added() {
         let pattern = "xddd";
 
         assert_eq!(powierża(pattern, "_xddd").unwrap(), 0);
