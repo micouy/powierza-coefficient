@@ -66,9 +66,9 @@ That means the algorithm must differentiate between cells that were filled in ho
 
 ## Illustration
 
-Cells with G's were filled in horizontal moves and those with C's were filled in diagonal moves. The numbers next to the letters are cells' scores. The coefficient is 2.
+Cells with G's were filled in horizontal moves and those with C's were filled in diagonal moves. The numbers next to the letters are cells' scores. Red cells were skipped because of an optimization. Yellow cells were left empty. The coefficient is 2.
 
-![image](https://user-images.githubusercontent.com/20628866/134387055-24dfec18-159e-42cc-8d1b-c4ef15ce7046.png)
+![image](assets/illustration.png)
 
 ## Benchmarks
 
