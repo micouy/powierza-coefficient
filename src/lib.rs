@@ -33,16 +33,18 @@ pub fn powierża_coefficient(pattern: &str, text: &str) -> Option<u32> {
 
         previous_row.clear();
         previous_row.extend_from_slice(&current_row);
-
-        n_chars_to_skip = first_match_ix;
+        n_chars_to_skip = first_match_ix + 1;
     }
 
-    // The lowest score in the last row is the coefficient.
-    previous_row
+    let first_match_ix_in_last_row = n_chars_to_skip - 1;
+
+    let coefficient = previous_row
         .into_iter()
-        .skip(n_chars_to_skip)
+        .skip(first_match_ix_in_last_row)
         .filter_map(|cell| cell)
-        .min()
+        .min();
+    
+    coefficient
 }
 
 type Row = Vec<Option<u32>>;
@@ -55,14 +57,14 @@ fn match_pattern_char(
     n_chars_to_omit: usize,
 ) -> Option<(Row, usize)> {
     let text_len = text.chars().count();
+
     let text_chars = text
         .chars()
         .enumerate()
         .take(text_len - n_chars_to_omit)
         .skip(n_chars_to_skip);
-    let mut current_row = vec![None; text_len];
 
-    // Index of the first match in the current row.
+    let mut current_row = vec![None; text_len];
     let mut first_match_ix = None;
     let mut left_score_and_is_gap = None;
 
