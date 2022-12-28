@@ -74,5 +74,5 @@ Cells with G's were filled in horizontal moves and those with C's were filled in
 
 The algorithm was compared with [strsim](https://crates.io/crates/strsim)'s `levenshtein` in a benchmark run on the author's computer:
 
-- Levenshtein distance: `[1.2829 µs 1.2881 µs 1.2940 µs]`
-- Powierża coefficient: `[1.8912 µs 1.9104 µs 1.9293 µs]`
+- Levenshtein distance: `[1.2908 µs 1.2946 µs 1.2987 µs]`
+- Powierża coefficient: `[1.7718 µs 1.7748 µs 1.7778 µs]`
