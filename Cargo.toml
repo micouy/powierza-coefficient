@@ -1,7 +1,7 @@
 [package]
 name = "powierza-coefficient"
-authors = ["micouy <m.powierza@tutanota.com>"]
-version = "1.0.1"
+authors = ["micouy"]
+version = "1.0.2"
 edition = "2018"
 include = [
 	"README.md",
