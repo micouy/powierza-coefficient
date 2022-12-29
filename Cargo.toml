@@ -7,6 +7,8 @@ include = [
 	"README.md",
 	"Cargo.toml",
 	"**/**.rs",
+	"fuzz/",
+	"assets/",
 ]
 description = "Powierża coefficient is a statistic for gauging if one string is an abbreviation of another"
 repository = "https://github.com/micouy/powierza-coefficient"
