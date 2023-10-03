@@ -1,5 +1,7 @@
 # _Powierża coefficient_
 
+[![Crates.io](https://img.shields.io/crates/d/powierza-coefficient)](https://crates.io/crates/powierza-coefficient)
+
 _Powierża coefficient_ is a statistic on strings for gauging whether a string is an "abbreviation" of another. The function is not symmetric so it is not a metric.
 
 - Let `T` (text) be a non-empty string.
