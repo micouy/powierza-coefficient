@@ -4,6 +4,7 @@ authors = ["micouy"]
 version = "1.0.2"
 edition = "2018"
 include = [
+        "LICENSE",
 	"README.md",
 	"Cargo.toml",
 	"**/**.rs",
